@@ -2,6 +2,7 @@
 #define EDGE_HPP
 
 #include "Vertex.hpp"
+#include "Graph.hpp"
 #include <boost/shared_ptr.hpp>
 
 extern "C++"
@@ -9,19 +10,21 @@ extern "C++"
 namespace graphs
 {
 	template <typename precision>
-	class Vertex;
+	class Graph;
 
 	template <typename precision>
 	struct Edge
 	{
 		public:
-			Vertex<precision> &from, &to;
+			typedef typename Graph<precision>::VertexIndex VertexIndex;
+
+			Edge();
+			Edge(const VertexIndex &fromIndex, const VertexIndex &toIndex, const precision &cost);
+
+			Edge<precision>& operator= (const Edge<precision>& edge);
+
+			VertexIndex fromIndex, toIndex;
 			precision cost;
-
-		protected:
-			Edge(Vertex<precision>& from, Vertex<precision>& to, const precision cost);
-
-		friend class Vertex<precision>;
 	};
 } //graphs
 } //extern C++

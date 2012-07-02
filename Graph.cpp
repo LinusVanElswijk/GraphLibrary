@@ -15,13 +15,13 @@ namespace graphs
 	}
 
 	template<typename precision>
-	Vertex<precision>& Graph<precision>::getVertex(const unsigned int& index)
+	Vertex<precision>& Graph<precision>::getVertex(const VertexIndex& index)
 	{
 		return (*vertices.at(index));
 	}
 
 	template<typename precision>
-	const Vertex<precision>& Graph<precision>::getVertex(const unsigned int& index) const
+	const Vertex<precision>& Graph<precision>::getVertex(const VertexIndex& index) const
 	{
 		return (*vertices.at(index));
 	}
@@ -50,9 +50,9 @@ namespace graphs
 	{
 		vertices.reserve(nrOfVertices);
 
-		for(unsigned int i = 0; i < nrOfVertices; i++)
+		for(VertexIndex i = 0; i < nrOfVertices; i++)
 		{
-			VertexPtr vertex(new Vertex<precision>(*this));
+			VertexPtr vertex(new Vertex<precision>(*this, i));
 			vertices.push_back(vertex);
 		}
 	}

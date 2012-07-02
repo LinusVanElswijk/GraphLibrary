@@ -23,7 +23,7 @@ namespace graphs
 			const GridGraph<precision>& getGraph() const;
 
 		protected:
-			GridVertex(Graph<precision>& graph, const unsigned int& x, const unsigned int& y);
+			GridVertex(GridGraph<precision>& graph, const unsigned int& x, const unsigned int& y);
 
 		private:
 			const unsigned int x,  y;

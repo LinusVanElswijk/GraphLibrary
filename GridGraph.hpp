@@ -18,23 +18,25 @@ namespace graphs
 	class GridGraph: public Graph<precision>
 	{
 		public:
+			typedef typename Graph<precision>::VertexIndex VertexIndex;
 			typedef boost::shared_ptr<GridVertex<precision> > VertexPtr;
 
-			GridGraph( const unsigned int& width, const unsigned int& height );
+			GridGraph( const VertexIndex& width, const VertexIndex& height );
 
-			virtual GridVertex<precision>& getVertex(const unsigned int& index);
-			virtual const GridVertex<precision>& getVertex(const unsigned int& index) const;
+			virtual GridVertex<precision>& getVertex(const VertexIndex& index);
+			virtual const GridVertex<precision>& getVertex(const VertexIndex& index) const;
 
-			GridVertex<precision>& getVertex(const unsigned int& x, const unsigned int& y);
-			const GridVertex<precision>& getVertex(const unsigned int& x, const unsigned int& y) const;
+			GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y);
+			const GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y) const;
 
-			unsigned int getWidth() const;
-			unsigned int getHeight() const;
+			VertexIndex getWidth() const;
+			VertexIndex getHeight() const;
+
+			VertexIndex positionToIndex(const VertexIndex& x, const VertexIndex& y) const;
+			VertexIndex indexToX(const VertexIndex& index) const;
+			VertexIndex indexToY(const VertexIndex& index) const;
 
 		protected:
-			std::size_t positionToIndex(const unsigned int& x, const unsigned int& y) const;
-			unsigned int indexToX(const std::size_t& index) const;
-			unsigned int indexToY(const std::size_t& index) const;
 
 			virtual void initializeVertices();
 			virtual void initializeGridVertices();
@@ -42,7 +44,7 @@ namespace graphs
 			virtual void initializeEdges();
 
 		private:
-			unsigned int width, height;
+			VertexIndex width, height;
 	};
 } //graphs
 } //extern C++

@@ -5,7 +5,7 @@
 namespace graphs
 {
 	template<typename precision>
-	GridGraph<precision>::GridGraph( const unsigned int& width, const unsigned int& height )
+	GridGraph<precision>::GridGraph( const VertexIndex& width, const VertexIndex& height )
     :Graph<precision>(width*height),
 	 width(width),
      height(height)
@@ -15,39 +15,39 @@ namespace graphs
 	}
 
 	template<typename precision>
-	GridVertex<precision>& GridGraph<precision>::getVertex(const unsigned int& index)
+	GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& index)
 	{
 		Vertex<precision>& vertex = Graph<precision>::getVertex(index);
 		return static_cast<GridVertex<precision>& >(vertex);
 	}
 
 	template<typename precision>
-	const GridVertex<precision>& GridGraph<precision>::getVertex(const unsigned int& index) const
+	const GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& index) const
 	{
 		const Vertex<precision>& vertex = Graph<precision>::getVertex(index);
 		return static_cast<const GridVertex<precision>& >(vertex);
 	}
 
 	template<typename precision>
-	GridVertex<precision>& GridGraph<precision>::getVertex(const unsigned int& x, const unsigned int& y)
+	GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& x, const VertexIndex& y)
 	{
 		return getVertex( positionToIndex(x, y) );
 	}
 
 	template<typename precision>
-	const GridVertex<precision>& GridGraph<precision>::getVertex(const unsigned int& x, const unsigned int& y) const
+	const GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& x, const VertexIndex& y) const
 	{
 		return getVertex( positionToIndex(x, y) );
 	}
 
 	template<typename precision>
-	unsigned int GridGraph<precision>::getWidth() const
+	typename GridGraph<precision>::VertexIndex GridGraph<precision>::getWidth() const
 	{
 		return width;
 	}
 
 	template<typename precision>
-	unsigned int GridGraph<precision>::getHeight() const
+	typename GridGraph<precision>::VertexIndex GridGraph<precision>::getHeight() const
 	{
 		return height;
 	}
@@ -103,19 +103,19 @@ namespace graphs
 	}
 
 	template<typename precision>
-	std::size_t GridGraph<precision>::positionToIndex(const unsigned int& x, const unsigned int& y) const
+	typename GridGraph<precision>::VertexIndex GridGraph<precision>::positionToIndex(const VertexIndex& x, const VertexIndex& y) const
 	{
-		return std::size_t(x + y * (width));
+		return VertexIndex(x + y * (width));
 	}
 
 	template<typename precision>
-	unsigned int GridGraph<precision>::indexToX(const std::size_t& index) const
+	typename GridGraph<precision>::VertexIndex GridGraph<precision>::indexToX(const VertexIndex& index) const
 	{
 		return index % (width);
 	}
 
 	template <typename precision>
-	unsigned int GridGraph<precision>::indexToY(const std::size_t& index) const
+	typename GridGraph<precision>::VertexIndex GridGraph<precision>::indexToY(const VertexIndex& index) const
 	{
 		return index / (width);
 	}

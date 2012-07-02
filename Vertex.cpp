@@ -3,9 +3,18 @@
 namespace graphs
 {
 	template<typename precision>
-	Vertex<precision>::Vertex(Graph<precision>& graph)
-	:graph(graph)
+	Vertex<precision>::Vertex(Graph<precision>& graph, const typename Graph<precision>::VertexIndex &index)
+	:graph(graph),
+	 index(index),
+	 outgoingEdges(),
+	 incomingEdges()
 	{
+	}
+
+	template<typename precision>
+	typename Graph<precision>::VertexIndex Vertex<precision>::getIndex() const
+	{
+		return index;
 	}
 
 	template<typename precision>
@@ -19,7 +28,9 @@ namespace graphs
 		}
 		else
 		{
-			new Edge<precision>(*this, toVertex, cost);
+			EdgePtr newEdge(new Edge<precision>(this->getIndex(), toVertex.getIndex(), cost));
+			outgoingEdges.push_back(newEdge);
+			toVertex.incomingEdges.push_back(newEdge);
 		}
 	}
 
@@ -31,6 +42,7 @@ namespace graphs
 		if(edge)
 		{
 			outgoingEdges.remove(edge);
+			toVertex.incomingEdges.remove(edge);
 		}
 	}
 
@@ -43,7 +55,12 @@ namespace graphs
 	template<typename precision>
 	bool Vertex<precision>::mutuallyConnected(const Vertex<precision>& vertexA, const Vertex<precision>& vertexB)
 	{
-		return vertexA.getEdgeTo(vertexB) != 0 && vertexA.getEdgeFrom(vertexB) != 0;
+		EdgePtr edgeTo = vertexA.getEdgeTo(vertexB),
+				edgeFrom = vertexA.getEdgeFrom(vertexB);
+
+		const EdgePtr NO_EDGE = EdgePtr();
+
+		return edgeTo != NO_EDGE && edgeFrom != NO_EDGE;
 	}
 
 	template<typename precision>
@@ -59,6 +76,42 @@ namespace graphs
 	}
 
 	template<typename precision>
+	typename std::list<typename Vertex<precision>::EdgePtr >::const_iterator Vertex<precision>::getEdgeIterator() const
+	{
+		return outgoingEdges.begin();
+	}
+
+	template<typename precision>
+	std::list<Edge<precision> > Vertex<precision>::getOutgoingEdges() const
+	{
+		typedef typename std::list<EdgePtr>::const_iterator iterator;
+
+		std::list<Edge<precision> > edges;
+
+		for(iterator i = outgoingEdges.begin(); i != outgoingEdges.end(); i++)
+		{
+			edges.push_back(**i);
+		}
+
+		return edges;
+	}
+
+	template<typename precision>
+	std::list<Edge<precision> > Vertex<precision>::getIncomingEdges() const
+	{
+		typedef typename std::list<EdgePtr>::const_iterator iterator;
+
+		std::list<Edge<precision> > edges;
+
+		for(iterator i = incomingEdges.begin(); i != incomingEdges.end(); i++)
+		{
+			edges.push_back(**i);
+		}
+
+		return edges;
+	}
+
+	template<typename precision>
 	typename Vertex<precision>::EdgePtr Vertex<precision>::getEdgeTo(Vertex& vertex)
 	{
 		typedef typename std::list<EdgePtr>::iterator iterator;
@@ -67,7 +120,7 @@ namespace graphs
 		{
 			EdgePtr edge = *i;
 
-			if( edge->to == vertex)
+			if( edge->toIndex == vertex.getIndex())
 			{
 				return edge;
 			}
@@ -85,7 +138,7 @@ namespace graphs
 		{
 			EdgePtr edge = *i;
 
-			if( edge->from == vertex)
+			if( edge->fromIndex == vertex.getIndex())
 			{
 				return edge;
 			}
@@ -103,7 +156,7 @@ namespace graphs
 		{
 			const EdgePtr edge = *i;
 
-			if( edge->to == vertex)
+			if( edge->toIndex == vertex.getIndex())
 			{
 				return edge;
 			}
@@ -121,7 +174,7 @@ namespace graphs
 		{
 			const EdgePtr edge = *i;
 
-			if( edge->from == vertex)
+			if( edge->fromIndex == vertex.getIndex())
 			{
 				return edge;
 			}

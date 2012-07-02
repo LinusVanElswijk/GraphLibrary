@@ -4,8 +4,8 @@
 namespace graphs
 {
 	template<typename precision>
-	GridVertex<precision>::GridVertex(Graph<precision>& graph, const unsigned int& x, const unsigned int& y)
-	:Vertex<precision>(graph),
+	GridVertex<precision>::GridVertex(GridGraph<precision>& graph, const unsigned int& x, const unsigned int& y)
+	:Vertex<precision>(graph, graph.positionToIndex(x, y)),
 	 x(x),
 	 y(y)
 	{
