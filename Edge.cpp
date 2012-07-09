@@ -12,13 +12,13 @@ namespace graphs
 	}*/
 
 	template<typename precision>
-	Edge<precision>::Edge(const VertexIndex &fromIndex, const VertexIndex &to, const precision &cost)
+	Edge<precision>::Edge(const VertexIndex &fromIndex, const VertexIndex &toIndex, const precision &cost)
 	:fromIndex(fromIndex),
 	 toIndex(toIndex),
 	 cost(cost)
 	{
 	}
-
+	/*
 	template<typename precision>
 	Edge<precision>& Edge<precision>::operator= (const Edge<precision>& edge)
 	{
@@ -27,6 +27,12 @@ namespace graphs
 		cost = edge.cost;
 
 		return *this;
+	}*/
+
+	template<typename precision>
+	bool Edge<precision>::operator== (const Edge<precision>& edge) const
+	{
+		return fromIndex == edge.fromIndex && toIndex == edge.toIndex && cost == edge.cost;
 	}
 
 	template struct Edge<float>;

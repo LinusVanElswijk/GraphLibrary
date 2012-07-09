@@ -28,8 +28,13 @@ namespace graphs
 		}
 		else
 		{
+			std::cout << "data (" << this->getIndex() << ", " << toVertex.getIndex() << ", " << cost << ")" << std::endl;
+
 			EdgePtr newEdge(new Edge<precision>(this->getIndex(), toVertex.getIndex(), cost));
+			std::cout << "new edge (" << newEdge->fromIndex << ", " << newEdge->toIndex << ", " << newEdge->cost << ")" << std::endl;
 			outgoingEdges.push_back(newEdge);
+
+			std::cout << "after push edge (" << newEdge->fromIndex << ", " << newEdge->toIndex << ", " << newEdge->cost << ")" << std::endl;
 			toVertex.incomingEdges.push_back(newEdge);
 		}
 	}

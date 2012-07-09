@@ -21,7 +21,9 @@ namespace graphs
 			Edge();
 			Edge(const VertexIndex &fromIndex, const VertexIndex &toIndex, const precision &cost);
 
-			Edge<precision>& operator= (const Edge<precision>& edge);
+			//Edge<precision>& operator= (const Edge<precision>& edge);
+
+			bool operator== (const Edge<precision>& edge) const;
 
 			VertexIndex fromIndex, toIndex;
 			precision cost;

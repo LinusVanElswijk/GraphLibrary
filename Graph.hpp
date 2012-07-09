@@ -27,7 +27,7 @@ namespace graphs
 			typedef typename std::vector<VertexPtr>::size_type VertexIndex;
 
 			Graph(const unsigned int& size);
-			Graph(const Graph<precision> &graph);
+			//Graph(const Graph<precision> &graph);
 
 			virtual ~Graph();
 

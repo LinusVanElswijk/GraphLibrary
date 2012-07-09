@@ -4,6 +4,7 @@
 #include "Graph.hpp"
 #include "Edge.hpp"
 
+#include <iostream>
 #include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>
