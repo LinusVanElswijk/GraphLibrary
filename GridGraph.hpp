@@ -26,8 +26,8 @@ namespace graphs
 			virtual GridVertex<precision>& getVertex(const VertexIndex& index);
 			virtual const GridVertex<precision>& getVertex(const VertexIndex& index) const;
 
-			GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y);
-			const GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y) const;
+			virtual GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y);
+			virtual const GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y) const;
 
 			VertexIndex getWidth() const;
 			VertexIndex getHeight() const;

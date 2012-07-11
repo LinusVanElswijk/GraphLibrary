@@ -27,10 +27,10 @@ namespace graphs
 
 			typename Graph<precision>::VertexIndex getIndex() const;
 
-			virtual void addEdgeTo(Vertex<precision>& vertex, const precision& cost);
-			void removeEdgeTo(Vertex<precision>& Vertex);
-
+			void addEdgeTo(Vertex<precision>& vertex, const precision& cost);
 			void addEdgeFrom(Vertex<precision>& vertex, const precision& cost);
+
+			void removeEdgeTo(Vertex<precision>& vertex);
 			void removeEdgeFrom(Vertex<precision>& vertex);
 
 			bool operator== (const Vertex<precision>& otherVertex) const;
@@ -45,16 +45,16 @@ namespace graphs
 
 			static bool mutuallyConnected(const Vertex<precision>& vertexA, const Vertex<precision>& vertexB);
 
-			const static EdgePtr NO_EDGE;
-
-		protected:
-			Vertex(Graph<precision>& graph, const typename Graph<precision>::VertexIndex &index);
-
 			EdgePtr getEdgeTo(Vertex<precision>& vertex);
 			EdgePtr getEdgeFrom(Vertex<precision>& vertex);
 
 			const EdgePtr getEdgeTo(const Vertex<precision>& vertex) const;
 			const EdgePtr getEdgeFrom(const Vertex<precision>& vertex) const;
+
+			//const static EdgePtr NO_EDGE;
+
+		protected:
+			Vertex(Graph<precision>& graph, const typename Graph<precision>::VertexIndex &index);
 
 		private:
 			Graph<precision>& graph;

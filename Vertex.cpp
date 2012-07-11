@@ -28,14 +28,28 @@ namespace graphs
 		}
 		else
 		{
-			std::cout << "data (" << this->getIndex() << ", " << toVertex.getIndex() << ", " << cost << ")" << std::endl;
-
 			EdgePtr newEdge(new Edge<precision>(this->getIndex(), toVertex.getIndex(), cost));
-			std::cout << "new edge (" << newEdge->fromIndex << ", " << newEdge->toIndex << ", " << newEdge->cost << ")" << std::endl;
 			outgoingEdges.push_back(newEdge);
 
-			std::cout << "after push edge (" << newEdge->fromIndex << ", " << newEdge->toIndex << ", " << newEdge->cost << ")" << std::endl;
 			toVertex.incomingEdges.push_back(newEdge);
+		}
+	}
+
+	template<typename precision>
+	void Vertex<precision>::addEdgeFrom(Vertex& fromVertex, const precision& cost)
+	{
+		EdgePtr edge = getEdgeFrom(fromVertex);
+
+		if(edge)
+		{
+			edge->cost = cost;
+		}
+		else
+		{
+			EdgePtr newEdge(new Edge<precision>(fromVertex.getIndex(), this->getIndex(), cost));
+			incomingEdges.push_back(newEdge);
+
+			fromVertex.outgoingEdges.push_back(newEdge);
 		}
 	}
 
@@ -48,6 +62,18 @@ namespace graphs
 		{
 			outgoingEdges.remove(edge);
 			toVertex.incomingEdges.remove(edge);
+		}
+	}
+
+	template<typename precision>
+	void Vertex<precision>::removeEdgeFrom(Vertex& fromVertex)
+	{
+		EdgePtr edge = getEdgeFrom(fromVertex);
+
+		if(edge)
+		{
+			incomingEdges.remove(edge);
+			fromVertex.outgoingEdges.remove(edge);
 		}
 	}
 

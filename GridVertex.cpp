@@ -28,13 +28,15 @@ namespace graphs
 	template<typename precision>
 	unsigned int GridVertex<precision>::getX() const
 	{
-		return x;
+		return getGraph().indexToX(this->getIndex());
+		//return x;
 	}
 
 	template<typename precision>
 	unsigned int GridVertex<precision>::getY() const
 	{
-		return y;
+		return getGraph().indexToY(this->getIndex());
+		//return y;
 	}
 
 	template class GridVertex<float>;

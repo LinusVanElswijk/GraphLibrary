@@ -15,7 +15,6 @@ namespace graphs
 	class GridVertex: public Vertex<precision>
 	{
 		public:
-
 			unsigned int getX() const;
 			unsigned int getY() const;
 
