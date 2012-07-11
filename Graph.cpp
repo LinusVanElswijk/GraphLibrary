@@ -46,6 +46,13 @@ namespace graphs
 	}
 
 	template<typename precision>
+	void Graph<precision>::promoteVertex(VertexPtr& vertex)
+	{
+		std::cout << "UNHAPPY ME" << std::endl;
+		//do nothing
+	}
+
+	template<typename precision>
 	void Graph<precision>::initializeVertices(const unsigned int& nrOfVertices)
 	{
 		vertices.reserve(nrOfVertices);
@@ -53,6 +60,7 @@ namespace graphs
 		for(VertexIndex i = 0; i < nrOfVertices; i++)
 		{
 			VertexPtr vertex(new Vertex<precision>(*this, i));
+			this->promoteVertex(vertex);
 			vertices.push_back(vertex);
 		}
 	}

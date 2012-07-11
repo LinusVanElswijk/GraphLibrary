@@ -40,8 +40,8 @@ namespace graphs
 			std::list<Edge<precision> > getOutgoingEdges() const;
 			std::list<Edge<precision> > getIncomingEdges() const;
 
-			Graph<precision>& getGraph();
-			const Graph<precision>& getGraph() const;
+			virtual Graph<precision>& getGraph();
+			virtual const Graph<precision>& getGraph() const;
 
 			static bool mutuallyConnected(const Vertex<precision>& vertexA, const Vertex<precision>& vertexB);
 
@@ -55,6 +55,7 @@ namespace graphs
 
 		protected:
 			Vertex(Graph<precision>& graph, const typename Graph<precision>::VertexIndex &index);
+			Vertex(Vertex<precision>& vertex);
 
 		private:
 			Graph<precision>& graph;

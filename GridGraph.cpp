@@ -10,7 +10,6 @@ namespace graphs
 	 width(width),
      height(height)
 	{
-		initializeGridVertices();
 		initializeEdges();
 	}
 
@@ -53,26 +52,18 @@ namespace graphs
 	}
 
 	template<typename precision>
-	void GridGraph<precision>::initializeVertices()
+	void GridGraph<precision>::promoteVertex(typename Graph<precision>::VertexPtr &vertex)
 	{
-		const std::size_t NR_OF_VERTICES = this->getNrOfVertices();
-		this->vertices.reserve(NR_OF_VERTICES);
-	}
+		Graph<precision>::promoteVertex(vertex);
 
-	template<typename precision>
-	void GridGraph<precision>::initializeGridVertices()
-	{
-		const unsigned int NR_OF_VERTICES = width*height;
+		const unsigned int 	  	   X = indexToX(vertex->getIndex()),
+						   	       Y = indexToY(vertex->getIndex());
 
-		for(std::size_t i = 0; i < NR_OF_VERTICES; i++)
-		{
-			const unsigned int X = indexToX(i),
-							   Y = indexToY(i);
+		VertexPtr gridVertex(new GridVertex<precision>(*vertex, X, Y));
 
-			VertexPtr vertexPtr(new GridVertex<precision>(*this, X, Y));
+		std::cout << "called!" << std::endl;
 
-			this->vertices.push_back( vertexPtr );
-		}
+		vertex = gridVertex;
 	}
 
 	template<typename precision>

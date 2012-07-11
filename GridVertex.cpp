@@ -4,10 +4,18 @@
 namespace graphs
 {
 	template<typename precision>
-	GridVertex<precision>::GridVertex(GridGraph<precision>& graph, const unsigned int& x, const unsigned int& y)
-	:Vertex<precision>(graph, graph.positionToIndex(x, y)),
+	GridVertex<precision>::GridVertex(Vertex<precision>& vertex, const unsigned int& x, const unsigned int& y)
+	:Vertex<precision>(vertex),
 	 x(x),
 	 y(y)
+	{
+	}
+
+	template<typename precision>
+	GridVertex<precision>::GridVertex(GridVertex<precision>& gridVertex)
+	:Vertex<precision>(gridVertex),
+	 x(gridVertex.x),
+	 y(gridVertex.y)
 	{
 	}
 
@@ -28,15 +36,15 @@ namespace graphs
 	template<typename precision>
 	unsigned int GridVertex<precision>::getX() const
 	{
-		return getGraph().indexToX(this->getIndex());
-		//return x;
+		//return getGraph().indexToX(this->getIndex());
+		return x;
 	}
 
 	template<typename precision>
 	unsigned int GridVertex<precision>::getY() const
 	{
-		return getGraph().indexToY(this->getIndex());
-		//return y;
+		//return getGraph().indexToY(this->getIndex());
+		return y;
 	}
 
 	template class GridVertex<float>;

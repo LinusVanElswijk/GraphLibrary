@@ -12,6 +12,15 @@ namespace graphs
 	}
 
 	template<typename precision>
+	Vertex<precision>::Vertex(Vertex<precision>& vertex)
+	:graph(vertex.graph),
+	 index(vertex.index),
+	 outgoingEdges(vertex.outgoingEdges),
+	 incomingEdges(vertex.incomingEdges)
+	{
+	}
+
+	template<typename precision>
 	typename Graph<precision>::VertexIndex Vertex<precision>::getIndex() const
 	{
 		return index;

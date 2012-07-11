@@ -18,11 +18,12 @@ namespace graphs
 			unsigned int getX() const;
 			unsigned int getY() const;
 
-			GridGraph<precision>& getGraph();
-			const GridGraph<precision>& getGraph() const;
+			virtual GridGraph<precision>& getGraph();
+			virtual const GridGraph<precision>& getGraph() const;
 
 		protected:
-			GridVertex(GridGraph<precision>& graph, const unsigned int& x, const unsigned int& y);
+			GridVertex(Vertex<precision>& vertex, const unsigned int& x, const unsigned int& y);
+			GridVertex(GridVertex<precision>& gridVertex);
 
 		private:
 			const unsigned int x,  y;

@@ -37,10 +37,7 @@ namespace graphs
 			VertexIndex indexToY(const VertexIndex& index) const;
 
 		protected:
-
-			virtual void initializeVertices();
-			virtual void initializeGridVertices();
-
+			void promoteVertex(typename Graph<precision>::VertexPtr& vertex);
 			virtual void initializeEdges();
 
 		private:

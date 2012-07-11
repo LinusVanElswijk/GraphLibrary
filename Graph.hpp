@@ -40,7 +40,10 @@ namespace graphs
 			unsigned int getNrOfVertices();
 
 		protected:
-			virtual void initializeVertices(const unsigned int& nrOfVertices);
+			virtual void promoteVertex(VertexPtr& vertex);
+
+		private:
+		    void initializeVertices(const unsigned int& nrOfVertices);
 			std::vector<VertexPtr> vertices;
 	};
 } //graphs
