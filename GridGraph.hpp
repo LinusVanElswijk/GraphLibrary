@@ -3,6 +3,7 @@
 
 #include "Graph.hpp"
 #include "GridVertex.hpp"
+#include "VertexRectangle.hpp"
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -11,42 +12,38 @@ extern "C++"
 {
 namespace graphs
 {
-	template <typename precision>
-	class GridVertex;
-
-	template <typename precision>
-	class GridGraph: public Graph<precision>
+	class GridGraph: public Graph, VertexRectangle
 	{
 		public:
-			typedef typename Graph<precision>::VertexIndex VertexIndex;
-			typedef boost::shared_ptr<GridVertex<precision> > VertexPtr;
+			GridGraph( const UInt &width, const UInt &height );
+			GridGraph( const GridGraph &otherGraph, bool copyEdges = true );
 
-			GridGraph( const VertexIndex& width, const VertexIndex& height );
+			GridVertex& getVertex(const UInt &index);
+			const GridVertex& getVertex(const UInt &index) const;
 
-			virtual GridVertex<precision>& getVertex(const VertexIndex& index);
-			virtual const GridVertex<precision>& getVertex(const VertexIndex& index) const;
+			virtual GridVertex& getVertex(const UInt &x, const UInt &y);
+			virtual const GridVertex& getVertex(const UInt &x, const UInt &y) const;
 
-			virtual GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y);
-			virtual const GridVertex<precision>& getVertex(const VertexIndex& x, const VertexIndex& y) const;
+			virtual UInt getWidth() const;
+			virtual UInt getHeight() const;
 
-			VertexIndex getWidth() const;
-			VertexIndex getHeight() const;
-
-			VertexIndex positionToIndex(const VertexIndex& x, const VertexIndex& y) const;
-			VertexIndex indexToX(const VertexIndex& index) const;
-			VertexIndex indexToY(const VertexIndex& index) const;
+			UInt positionToIndex(const UInt &x, const UInt &y) const;
+			UInt indexToX(const UInt &index) const;
+			UInt indexToY(const UInt &index) const;
 
 		protected:
-			void promoteVertex(typename Graph<precision>::VertexPtr& vertex);
-			virtual void initializeEdges();
+			class GridVertexPromotion: public VertexPromoteFunction
+			{
+				virtual void operator() (VertexPtr &vertex) const;
+			};
 
 		private:
-			VertexIndex width, height;
+			void initializeEdges();
+
+			UInt width, height;
 	};
 } //graphs
 } //extern C++
-
-#include "GridGraph.hpp"
 
 #endif /* GRID_GRAPH_HPP */
 

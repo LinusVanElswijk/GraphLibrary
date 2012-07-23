@@ -3,50 +3,41 @@
 
 namespace graphs
 {
-	template<typename precision>
-	GridVertex<precision>::GridVertex(Vertex<precision>& vertex, const unsigned int& x, const unsigned int& y)
-	:Vertex<precision>(vertex),
+	GridVertex::GridVertex(Vertex &vertex, const UInt &x, const UInt &y)
+	:Vertex(vertex),
 	 x(x),
 	 y(y)
 	{
 	}
 
-	template<typename precision>
-	GridVertex<precision>::GridVertex(GridVertex<precision>& gridVertex)
-	:Vertex<precision>(gridVertex),
+	GridVertex::GridVertex(GridVertex& gridVertex)
+	:Vertex(gridVertex),
 	 x(gridVertex.x),
 	 y(gridVertex.y)
 	{
 	}
 
-	template<typename precision>
-	GridGraph<precision>& GridVertex<precision>::getGraph()
+	GridGraph& GridVertex::getGraph()
 	{
-		Graph<precision>& graph = Vertex<precision>::getGraph();
-		return static_cast<GridGraph<precision>& >(graph);
+		Graph& graph = Vertex::getGraph();
+		return static_cast< GridGraph& >(graph);
 	}
 
-	template<typename precision>
-	const GridGraph<precision>& GridVertex<precision>::getGraph() const
+	const GridGraph& GridVertex::getGraph() const
 	{
-		const Graph<precision>& graph = Vertex<precision>::getGraph();
-		return static_cast<const GridGraph<precision>& >(graph);
+		const Graph& graph = Vertex::getGraph();
+		return static_cast< const GridGraph& >(graph);
 	}
 
-	template<typename precision>
-	unsigned int GridVertex<precision>::getX() const
+	unsigned int GridVertex::getX() const
 	{
 		//return getGraph().indexToX(this->getIndex());
 		return x;
 	}
 
-	template<typename precision>
-	unsigned int GridVertex<precision>::getY() const
+	unsigned int GridVertex::getY() const
 	{
 		//return getGraph().indexToY(this->getIndex());
 		return y;
 	}
-
-	template class GridVertex<float>;
-	template class GridVertex<double>;
 }//graphs

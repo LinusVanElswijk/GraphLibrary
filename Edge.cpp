@@ -1,4 +1,4 @@
-#include "GridGraph.hpp"
+#include "Edge.hpp"
 
 namespace graphs
 {
@@ -11,13 +11,13 @@ namespace graphs
 	{
 	}*/
 
-	template<typename precision>
-	Edge<precision>::Edge(const VertexIndex &fromIndex, const VertexIndex &toIndex, const precision &cost)
+	Edge::Edge(const UInt &fromIndex, const UInt &toIndex, const Real &cost)
 	:fromIndex(fromIndex),
 	 toIndex(toIndex),
 	 cost(cost)
 	{
 	}
+
 	/*
 	template<typename precision>
 	Edge<precision>& Edge<precision>::operator= (const Edge<precision>& edge)
@@ -29,12 +29,8 @@ namespace graphs
 		return *this;
 	}*/
 
-	template<typename precision>
-	bool Edge<precision>::operator== (const Edge<precision>& edge) const
+	bool Edge::operator== (const Edge &edge) const
 	{
 		return fromIndex == edge.fromIndex && toIndex == edge.toIndex && cost == edge.cost;
 	}
-
-	template struct Edge<float>;
-	template struct Edge<double>;
 }//graphs

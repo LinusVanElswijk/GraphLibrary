@@ -2,8 +2,7 @@
 
 namespace graphs
 {
-	template<typename precision>
-	Vertex<precision>::Vertex(Graph<precision>& graph, const typename Graph<precision>::VertexIndex &index)
+	Vertex::Vertex(Graph &graph, const UInt &index)
 	:graph(graph),
 	 index(index),
 	 outgoingEdges(),
@@ -11,8 +10,7 @@ namespace graphs
 	{
 	}
 
-	template<typename precision>
-	Vertex<precision>::Vertex(Vertex<precision>& vertex)
+	Vertex::Vertex(Vertex &vertex)
 	:graph(vertex.graph),
 	 index(vertex.index),
 	 outgoingEdges(vertex.outgoingEdges),
@@ -20,16 +18,14 @@ namespace graphs
 	{
 	}
 
-	template<typename precision>
-	typename Graph<precision>::VertexIndex Vertex<precision>::getIndex() const
+	UInt Vertex::getIndex() const
 	{
 		return index;
 	}
 
-	template<typename precision>
-	void Vertex<precision>::addEdgeTo(Vertex& toVertex, const precision& cost)
+	void Vertex::addEdgeTo(const UInt &index, const Real &cost)
 	{
-		EdgePtr edge = getEdgeTo(toVertex);
+		EdgePtr edge = getEdgeTo(index);
 
 		if(edge)
 		{
@@ -37,17 +33,21 @@ namespace graphs
 		}
 		else
 		{
-			EdgePtr newEdge(new Edge<precision>(this->getIndex(), toVertex.getIndex(), cost));
+			EdgePtr newEdge(new Edge(this->getIndex(), index, cost));
 			outgoingEdges.push_back(newEdge);
 
-			toVertex.incomingEdges.push_back(newEdge);
+            graph.getVertex(index).incomingEdges.push_back(newEdge);
 		}
 	}
 
-	template<typename precision>
-	void Vertex<precision>::addEdgeFrom(Vertex& fromVertex, const precision& cost)
+	void Vertex::addEdgeTo(Vertex &toVertex, const Real &cost)
 	{
-		EdgePtr edge = getEdgeFrom(fromVertex);
+		addEdgeTo(toVertex.getIndex(), cost);
+	}
+
+	void Vertex::addEdgeFrom(const UInt &index, const Real &cost)
+	{
+		EdgePtr edge = getEdgeFrom(index);
 
 		if(edge)
 		{
@@ -55,45 +55,66 @@ namespace graphs
 		}
 		else
 		{
-			EdgePtr newEdge(new Edge<precision>(fromVertex.getIndex(), this->getIndex(), cost));
+			EdgePtr newEdge(new Edge(index, this->getIndex(), cost));
 			incomingEdges.push_back(newEdge);
 
-			fromVertex.outgoingEdges.push_back(newEdge);
+			graph.getVertex(index).outgoingEdges.push_back(newEdge);
 		}
 	}
 
-	template<typename precision>
-	void Vertex<precision>::removeEdgeTo(Vertex& toVertex)
+	void Vertex::addEdgeFrom(Vertex &fromVertex, const Real &cost)
 	{
-		EdgePtr edge = getEdgeTo(toVertex);
+		addEdgeFrom(fromVertex.getIndex(), cost);
+	}
+
+	void Vertex::removeEdgeTo(const UInt &index)
+	{
+		EdgePtr edge = getEdgeTo(index);
 
 		if(edge)
 		{
 			outgoingEdges.remove(edge);
-			toVertex.incomingEdges.remove(edge);
+			graph.getVertex(index).incomingEdges.remove(edge);
 		}
 	}
 
-	template<typename precision>
-	void Vertex<precision>::removeEdgeFrom(Vertex& fromVertex)
+	void Vertex::removeEdgeTo(Vertex &toVertex)
 	{
-		EdgePtr edge = getEdgeFrom(fromVertex);
+		removeEdgeTo(toVertex.getIndex());
+	}
+
+	void Vertex::removeEdgeFrom(const UInt &index)
+	{
+		EdgePtr edge = getEdgeFrom(index);
 
 		if(edge)
 		{
 			incomingEdges.remove(edge);
-			fromVertex.outgoingEdges.remove(edge);
+			graph.getVertex(index).outgoingEdges.remove(edge);
 		}
 	}
 
-	template<typename precision>
-	bool Vertex<precision>::operator== (const Vertex& otherVertex) const
+	void Vertex::removeEdgeFrom(Vertex &fromVertex)
+	{
+		removeEdgeFrom(fromVertex.getIndex());
+	}
+
+	void Vertex::removeAllOutgoingEdges()
+	{
+		outgoingEdges.clear();
+	}
+
+	void Vertex::removeAllIncomingEdges()
+	{
+		incomingEdges.clear();
+	}
+
+	bool Vertex::operator== (const Vertex &otherVertex) const
 	{
 		return this == &otherVertex;
 	}
 
-	template<typename precision>
-	bool Vertex<precision>::mutuallyConnected(const Vertex<precision>& vertexA, const Vertex<precision>& vertexB)
+	bool Vertex::mutuallyConnected(const Vertex &vertexA, const Vertex &vertexB)
 	{
 		EdgePtr edgeTo = vertexA.getEdgeTo(vertexB),
 				edgeFrom = vertexA.getEdgeFrom(vertexB);
@@ -103,30 +124,21 @@ namespace graphs
 		return edgeTo != NO_EDGE && edgeFrom != NO_EDGE;
 	}
 
-	template<typename precision>
-	Graph<precision>& Vertex<precision>::getGraph()
+	Graph& Vertex::getGraph()
 	{
 		return graph;
 	}
 
-	template<typename precision>
-	const Graph<precision>& Vertex<precision>::getGraph() const
+	const Graph& Vertex::getGraph() const
 	{
 		return graph;
 	}
 
-	template<typename precision>
-	typename std::list<typename Vertex<precision>::EdgePtr >::const_iterator Vertex<precision>::getEdgeIterator() const
-	{
-		return outgoingEdges.begin();
-	}
-
-	template<typename precision>
-	std::list<Edge<precision> > Vertex<precision>::getOutgoingEdges() const
+	std::list<Edge> Vertex::getOutgoingEdges() const
 	{
 		typedef typename std::list<EdgePtr>::const_iterator iterator;
 
-		std::list<Edge<precision> > edges;
+		std::list<Edge> edges;
 
 		for(iterator i = outgoingEdges.begin(); i != outgoingEdges.end(); i++)
 		{
@@ -136,12 +148,11 @@ namespace graphs
 		return edges;
 	}
 
-	template<typename precision>
-	std::list<Edge<precision> > Vertex<precision>::getIncomingEdges() const
+	std::list<Edge> Vertex::getIncomingEdges() const
 	{
 		typedef typename std::list<EdgePtr>::const_iterator iterator;
 
-		std::list<Edge<precision> > edges;
+		std::list<Edge > edges;
 
 		for(iterator i = incomingEdges.begin(); i != incomingEdges.end(); i++)
 		{
@@ -151,8 +162,7 @@ namespace graphs
 		return edges;
 	}
 
-	template<typename precision>
-	typename Vertex<precision>::EdgePtr Vertex<precision>::getEdgeTo(Vertex& vertex)
+	EdgePtr Vertex::getEdgeTo(const UInt &index)
 	{
 		typedef typename std::list<EdgePtr>::iterator iterator;
 
@@ -160,7 +170,7 @@ namespace graphs
 		{
 			EdgePtr edge = *i;
 
-			if( edge->toIndex == vertex.getIndex())
+			if( edge->toIndex == index)
 			{
 				return edge;
 			}
@@ -169,8 +179,12 @@ namespace graphs
 		return EdgePtr();
 	}
 
-	template<typename precision>
-	typename Vertex<precision>::EdgePtr Vertex<precision>::getEdgeFrom(Vertex& vertex)
+	EdgePtr Vertex::getEdgeTo(Vertex &vertex)
+	{
+		return getEdgeTo(vertex.getIndex());
+	}
+
+	EdgePtr Vertex::getEdgeFrom(const UInt &index)
 	{
 		typedef typename std::list<EdgePtr>::iterator iterator;
 
@@ -178,7 +192,7 @@ namespace graphs
 		{
 			EdgePtr edge = *i;
 
-			if( edge->fromIndex == vertex.getIndex())
+			if( edge->fromIndex == index)
 			{
 				return edge;
 			}
@@ -187,8 +201,12 @@ namespace graphs
 		return EdgePtr();
 	}
 
-	template<typename precision>
-	const typename Vertex<precision>::EdgePtr Vertex<precision>::getEdgeTo(const Vertex& vertex) const
+	EdgePtr Vertex::getEdgeFrom(Vertex &vertex)
+	{
+		return getEdgeFrom(vertex.getIndex());
+	}
+
+	const EdgePtr Vertex::getEdgeTo(const UInt &index) const
 	{
 		typedef typename std::list<EdgePtr>::const_iterator iterator;
 
@@ -196,7 +214,7 @@ namespace graphs
 		{
 			const EdgePtr edge = *i;
 
-			if( edge->toIndex == vertex.getIndex())
+			if(edge->toIndex == index)
 			{
 				return edge;
 			}
@@ -205,8 +223,12 @@ namespace graphs
 		return EdgePtr();
 	}
 
-	template<typename precision>
-	const typename Vertex<precision>::EdgePtr Vertex<precision>::getEdgeFrom(const Vertex& vertex) const
+	const EdgePtr Vertex::getEdgeTo(const Vertex &vertex) const
+	{
+		return getEdgeTo(vertex.getIndex());
+	}
+
+	const EdgePtr Vertex::getEdgeFrom(const UInt &index) const
 	{
 		typedef typename std::list<EdgePtr>::const_iterator iterator;
 
@@ -214,7 +236,7 @@ namespace graphs
 		{
 			const EdgePtr edge = *i;
 
-			if( edge->fromIndex == vertex.getIndex())
+			if( edge->fromIndex == index)
 			{
 				return edge;
 			}
@@ -223,6 +245,28 @@ namespace graphs
 		return EdgePtr();
 	}
 
-	template class Vertex<float>;
-	template class Vertex<double>;
+	const EdgePtr Vertex::getEdgeFrom(const Vertex &vertex) const
+	{
+		return getEdgeFrom(vertex.getIndex());
+	}
+
+	void Vertex::copyEdges(const Vertex& source)
+	{
+		std::list<Edge> outgoingEdges = source.getOutgoingEdges();
+		std::list<Edge> incomingEdges = source.getIncomingEdges();
+
+		removeAllOutgoingEdges();
+		typedef typename std::list<Edge>::const_iterator iterator;
+		for(iterator i = outgoingEdges.begin(); i != outgoingEdges.end(); i++)
+		{
+			addEdgeTo(i->toIndex, i->cost);
+		}
+
+		removeAllIncomingEdges();
+		for(iterator i = incomingEdges.begin(); i != incomingEdges.end(); i++)
+		{
+			addEdgeFrom(i->fromIndex, i->cost);
+		}
+	}
+
 }//graphs

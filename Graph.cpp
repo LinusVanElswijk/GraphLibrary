@@ -2,69 +2,82 @@
 
 namespace graphs
 {
-	template<typename precision>
-	Graph<precision>::Graph(const unsigned int& size)
+	Graph::Graph(const UInt &size)
     :vertices()
 	{
 		initializeVertices(size);
 	}
 
-	template<typename precision>
-	Graph<precision>::~Graph()
+	Graph::Graph(const Graph& otherGraph, bool copyEdges)
+	:vertices()
+	{
+		initializeVertices(otherGraph.getNrOfVertices());
+
+		if(copyEdges)
+		{
+			copyEdgeTopology(otherGraph);
+		}
+	}
+
+	Graph::~Graph()
 	{
 	}
 
-	template<typename precision>
-	Vertex<precision>& Graph<precision>::getVertex(const VertexIndex& index)
+	Vertex& Graph::getVertex(const UInt &index)
 	{
 		return (*vertices.at(index));
 	}
 
-	template<typename precision>
-	const Vertex<precision>& Graph<precision>::getVertex(const VertexIndex& index) const
+	const Vertex& Graph::getVertex(const UInt &index) const
 	{
 		return (*vertices.at(index));
 	}
 
-	template<typename precision>
-	void Graph<precision>::addEdge(Vertex<precision> &vertexA, Vertex<precision> &vertexB, const precision& cost)
+	void Graph::addEdge(Vertex &vertexA, Vertex &vertexB, const Real &cost)
 	{
 		vertexA.addEdgeTo(vertexB, cost);
 	}
 
-	template<typename precision>
-	void Graph<precision>::addBidirectionalEdge(Vertex<precision> &vertexA, Vertex<precision> &vertexB, const precision& cost)
+	void Graph::addBidirectionalEdge(Vertex &vertexA, Vertex &vertexB, const Real &cost)
 	{
 		addEdge(vertexA, vertexB, cost);
 		addEdge(vertexB, vertexA, cost);
 	}
 
-	template<typename precision>
-	unsigned int Graph<precision>::getNrOfVertices()
+	UInt Graph::getNrOfVertices() const
 	{
-		return vertices.size();
+		return (UInt)vertices.size();
 	}
 
-	template<typename precision>
-	void Graph<precision>::promoteVertex(VertexPtr& vertex)
+	void Graph::initializeVertices(const UInt &nrOfVertices)
 	{
-		std::cout << "UNHAPPY ME" << std::endl;
-		//do nothing
-	}
 
-	template<typename precision>
-	void Graph<precision>::initializeVertices(const unsigned int& nrOfVertices)
-	{
-		vertices.reserve(nrOfVertices);
+		vertices.reserve((VectorSize)nrOfVertices);
 
-		for(VertexIndex i = 0; i < nrOfVertices; i++)
+		for(UInt i = 0; i < nrOfVertices; i++)
 		{
-			VertexPtr vertex(new Vertex<precision>(*this, i));
-			this->promoteVertex(vertex);
+			VertexPtr vertex(new Vertex(*this, i));
 			vertices.push_back(vertex);
 		}
 	}
 
-	template class Graph<float>;
-	template class Graph<double>;
+	void Graph::copyEdgeTopology(const Graph& otherGraph)
+	{
+		const UInt NR_OF_VERTICES = otherGraph.getNrOfVertices();
+
+		for(UInt i = 0; i < NR_OF_VERTICES; i++)
+		{
+			this->getVertex(i).copyEdges(otherGraph.getVertex(i));
+		}
+	}
+
+	void Graph::promoteVertices(const VertexPromoteFunction &promoteVertex)
+	{
+		typedef typename std::vector<VertexPtr>::iterator Iterator;
+
+		for(Iterator i = vertices.begin(); i != vertices.end(); i++)
+		{
+			promoteVertex(*i);
+		}
+	}
 }//graphs

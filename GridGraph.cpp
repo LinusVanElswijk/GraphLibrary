@@ -1,116 +1,117 @@
 #include <iostream>
-#include <cmath>
+
 #include "GridGraph.hpp"
 
 namespace graphs
 {
-	template<typename precision>
-	GridGraph<precision>::GridGraph( const VertexIndex& width, const VertexIndex& height )
-    :Graph<precision>(width*height),
+	GridGraph::GridGraph( const UInt &width, const UInt &height )
+    :Graph(width*height),
 	 width(width),
      height(height)
 	{
+		GridVertexPromotion promoteFunction;
+		promoteVertices( promoteFunction );
+
 		initializeEdges();
 	}
 
-	template<typename precision>
-	GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& index)
+	GridGraph::GridGraph( const GridGraph &otherGraph, bool copyEdges )
+	:Graph(otherGraph, false),
+	 width(otherGraph.width),
+	 height(otherGraph.height)
 	{
-		Vertex<precision>& vertex = Graph<precision>::getVertex(index);
-		return static_cast<GridVertex<precision>& >(vertex);
+		GridVertexPromotion promoteFunction;
+		promoteVertices( promoteFunction );
+
+		if(copyEdges)
+		{
+			copyEdgeTopology(otherGraph);
+		}
 	}
 
-	template<typename precision>
-	const GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& index) const
+	GridVertex& GridGraph::getVertex(const UInt &index)
 	{
-		const Vertex<precision>& vertex = Graph<precision>::getVertex(index);
-		return static_cast<const GridVertex<precision>& >(vertex);
+		Vertex& vertex = Graph::getVertex(index);
+		return static_cast< GridVertex& >(vertex);
 	}
 
-	template<typename precision>
-	GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& x, const VertexIndex& y)
+	const GridVertex& GridGraph::getVertex(const UInt &index) const
+	{
+		const Vertex& vertex = Graph::getVertex(index);
+		return static_cast<const GridVertex& >(vertex);
+	}
+
+	GridVertex& GridGraph::getVertex(const UInt &x, const UInt &y)
 	{
 		return getVertex( positionToIndex(x, y) );
 	}
 
-	template<typename precision>
-	const GridVertex<precision>& GridGraph<precision>::getVertex(const VertexIndex& x, const VertexIndex& y) const
+	const GridVertex& GridGraph::getVertex(const UInt &x, const UInt &y) const
 	{
 		return getVertex( positionToIndex(x, y) );
 	}
 
-	template<typename precision>
-	typename GridGraph<precision>::VertexIndex GridGraph<precision>::getWidth() const
+	UInt GridGraph::getWidth() const
 	{
 		return width;
 	}
 
-	template<typename precision>
-	typename GridGraph<precision>::VertexIndex GridGraph<precision>::getHeight() const
+	UInt GridGraph::getHeight() const
 	{
 		return height;
 	}
 
-	template<typename precision>
-	void GridGraph<precision>::promoteVertex(typename Graph<precision>::VertexPtr &vertex)
+	void GridGraph::GridVertexPromotion::operator() (VertexPtr &vertex) const
 	{
-		Graph<precision>::promoteVertex(vertex);
+		GridGraph &graph = static_cast< GridGraph& >( vertex->getGraph() );
 
-		const unsigned int 	  	   X = indexToX(vertex->getIndex()),
-						   	       Y = indexToY(vertex->getIndex());
+		const UInt	X = graph.indexToX(vertex->getIndex()),
+					Y = graph.indexToY(vertex->getIndex());
 
-		VertexPtr gridVertex(new GridVertex<precision>(*vertex, X, Y));
-
-		std::cout << "called!" << std::endl;
+		GridVertexPtr gridVertex(new GridVertex(*vertex, X, Y));
 
 		vertex = gridVertex;
 	}
 
-	template<typename precision>
-	void GridGraph<precision>::initializeEdges()
+	void GridGraph::initializeEdges()
 	{
-		const precision SQRT_2 = (precision)std::sqrt(2.0);
+		const Real SQRT_2 = (Real)std::sqrt(2.0);
 
-		for(unsigned int x = 1; x < width; x++)
+		for(UInt x = 1; x < width; x++)
 		{
-			for(unsigned int y = 1; y < height; y++)
+			for(UInt y = 1; y < height; y++)
 			{
-				this->addBidirectionalEdge(this->getVertex(x, y), this->getVertex(x-1, y), (precision)1.0);
-				this->addBidirectionalEdge(this->getVertex(x, y), this->getVertex(x, y-1), (precision)1.0);
-				this->addBidirectionalEdge(this->getVertex(x, y), this->getVertex(x-1, y-1), (precision)SQRT_2);
-				this->addBidirectionalEdge(this->getVertex(x-1, y), this->getVertex(x, y-1), (precision)SQRT_2);
+				this->addBidirectionalEdge(this->getVertex(x, y), this->getVertex(x-1, y), (Real)1.0);
+				this->addBidirectionalEdge(this->getVertex(x, y), this->getVertex(x, y-1), (Real)1.0);
+				this->addBidirectionalEdge(this->getVertex(x, y), this->getVertex(x-1, y-1), SQRT_2);
+				this->addBidirectionalEdge(this->getVertex(x-1, y), this->getVertex(x, y-1), SQRT_2);
 			}
 		}
 
-		for(unsigned int x = 1; x < width; x++)
+		for(UInt x = 1; x < width; x++)
 		{
-			this->addBidirectionalEdge(this->getVertex(x,0), this->getVertex(x-1, 0), (precision)1.0);
+			this->addBidirectionalEdge(this->getVertex(x,0), this->getVertex(x-1, 0), (Real)1.0);
 		}
 
-		for(unsigned int y = 1; y < height; y++)
+		for(UInt y = 1; y < height; y++)
 		{
-			this->addBidirectionalEdge(this->getVertex(0,y), this->getVertex(0, y-1), (precision)1.0);
+			this->addBidirectionalEdge(this->getVertex(0,y), this->getVertex(0, y-1), (Real)1.0);
 		}
 	}
 
-	template<typename precision>
-	typename GridGraph<precision>::VertexIndex GridGraph<precision>::positionToIndex(const VertexIndex& x, const VertexIndex& y) const
+	UInt GridGraph::positionToIndex(const UInt &x, const UInt &y) const
 	{
-		return VertexIndex(x + y * (width));
+		return x + y * width;
 	}
 
-	template<typename precision>
-	typename GridGraph<precision>::VertexIndex GridGraph<precision>::indexToX(const VertexIndex& index) const
+	UInt GridGraph::indexToX(const UInt &index) const
 	{
-		return index % (width);
+		return index % width;
 	}
 
-	template <typename precision>
-	typename GridGraph<precision>::VertexIndex GridGraph<precision>::indexToY(const VertexIndex& index) const
+	UInt GridGraph::indexToY(const UInt &index) const
 	{
-		return index / (width);
+		return index / width;
 	}
 
-	template class GridGraph<float>;
-	template class GridGraph<double>;
 }//graphs

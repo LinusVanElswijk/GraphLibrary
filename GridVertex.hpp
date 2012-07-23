@@ -8,27 +8,25 @@ extern "C++"
 {
 namespace graphs
 {
-	template <typename precision>
 	class GridGraph;
 
-	template <typename precision>
-	class GridVertex: public Vertex<precision>
+	class GridVertex: public Vertex
 	{
 		public:
-			unsigned int getX() const;
-			unsigned int getY() const;
+			UInt getX() const;
+			UInt getY() const;
 
-			virtual GridGraph<precision>& getGraph();
-			virtual const GridGraph<precision>& getGraph() const;
+			GridGraph& getGraph();
+			const GridGraph& getGraph() const;
 
 		protected:
-			GridVertex(Vertex<precision>& vertex, const unsigned int& x, const unsigned int& y);
-			GridVertex(GridVertex<precision>& gridVertex);
+			GridVertex(Vertex& vertex, const UInt &x, const UInt &y);
+			GridVertex(GridVertex& gridVertex);
 
 		private:
-			const unsigned int x,  y;
+			const UInt x,  y;
 
-		friend class GridGraph<precision>;
+		friend class GridGraph;
 	};
 } //graphs
 } //extern C++

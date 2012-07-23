@@ -2,7 +2,6 @@
 #define VERTEX_HPP
 
 #include "Graph.hpp"
-#include "Edge.hpp"
 
 #include <iostream>
 #include <boost/weak_ptr.hpp>
@@ -13,61 +12,72 @@ extern "C++"
 {
 namespace graphs
 {
-	template <typename precision>
 	class Graph;
 
-	template <typename precision>
 	struct Edge;
 
-	template <typename precision>
 	class Vertex
 	{
 		public:
-			typedef boost::shared_ptr< Edge<precision> > EdgePtr;
+			UInt getIndex() const;
 
-			typename Graph<precision>::VertexIndex getIndex() const;
+			void addEdgeTo(const UInt &index, const Real &cost);
+			void addEdgeFrom(const UInt &index, const Real &cost);
 
-			void addEdgeTo(Vertex<precision>& vertex, const precision& cost);
-			void addEdgeFrom(Vertex<precision>& vertex, const precision& cost);
+			void removeEdgeTo(const UInt &index);
+			void removeEdgeFrom(const UInt &index);
 
-			void removeEdgeTo(Vertex<precision>& vertex);
-			void removeEdgeFrom(Vertex<precision>& vertex);
+			void addEdgeTo(Vertex &vertex, const Real &cost);
+			void addEdgeFrom(Vertex &vertex, const Real &cost);
 
-			bool operator== (const Vertex<precision>& otherVertex) const;
+			void removeEdgeTo(Vertex &vertex);
+			void removeEdgeFrom(Vertex &vertex);
 
-			typename std::list<typename Vertex<precision>::EdgePtr >::const_iterator getEdgeIterator() const;
+			void removeAllOutgoingEdges();
+			void removeAllIncomingEdges();
 
-			std::list<Edge<precision> > getOutgoingEdges() const;
-			std::list<Edge<precision> > getIncomingEdges() const;
+			bool operator== (const Vertex &otherVertex) const;
 
-			virtual Graph<precision>& getGraph();
-			virtual const Graph<precision>& getGraph() const;
+			std::list<Edge> getOutgoingEdges() const;
+			std::list<Edge> getIncomingEdges() const;
 
-			static bool mutuallyConnected(const Vertex<precision>& vertexA, const Vertex<precision>& vertexB);
+			Graph& getGraph();
+			const Graph& getGraph() const;
 
-			EdgePtr getEdgeTo(Vertex<precision>& vertex);
-			EdgePtr getEdgeFrom(Vertex<precision>& vertex);
+			static bool mutuallyConnected(const Vertex &vertexA, const Vertex &vertexB);
 
-			const EdgePtr getEdgeTo(const Vertex<precision>& vertex) const;
-			const EdgePtr getEdgeFrom(const Vertex<precision>& vertex) const;
+			EdgePtr getEdgeTo(const UInt& index);
+			EdgePtr getEdgeFrom(const UInt& index);
+
+			EdgePtr getEdgeTo(Vertex &vertex);
+			EdgePtr getEdgeFrom(Vertex &vertex);
+
+			const EdgePtr getEdgeTo(const UInt& index) const;
+			const EdgePtr getEdgeFrom(const UInt& index) const;
+
+			const EdgePtr getEdgeTo(const Vertex &vertex) const;
+			const EdgePtr getEdgeFrom(const Vertex &vertex) const;
 
 			//const static EdgePtr NO_EDGE;
 
 		protected:
-			Vertex(Graph<precision>& graph, const typename Graph<precision>::VertexIndex &index);
-			Vertex(Vertex<precision>& vertex);
+			Vertex(Graph &graph, const UInt &index);
+			Vertex(Vertex &vertex);
+
+			void copyEdges(const Vertex& source);
 
 		private:
-			Graph<precision>& graph;
+			Graph& graph;
 
-			const typename Graph<precision>::VertexIndex index;
-
+			const UInt index;
 
 			std::list<EdgePtr> outgoingEdges;
 			std::list<EdgePtr> incomingEdges;
 
-		friend class Edge<precision>;
-		friend class Graph<precision>;
+
+
+		friend class Edge;
+		friend class Graph;
 	};
 } //graphs
 } //extern C++

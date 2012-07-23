@@ -1,53 +1,60 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include "Vertex.hpp"
-#include "Edge.hpp"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
 #include <vector>
+
+#include "Types.hpp"
 
 extern "C++"
 {
 namespace graphs
 {
-	template <typename precision>
 	class Vertex;
+	class Edge;
 
-	template <typename precision>
-	class EdgeMap;
-
-	template <typename precision>
 	class Graph
 	{
 		public:
-			typedef boost::shared_ptr<Vertex<precision> > EdgePtr;
-			typedef boost::shared_ptr<Vertex<precision> > VertexPtr;
-			typedef typename std::vector<VertexPtr>::size_type VertexIndex;
-
-			Graph(const unsigned int& size);
-			//Graph(const Graph<precision> &graph);
+			explicit Graph(const UInt &size);
+			Graph(const Graph& otherGraph, bool copyEdges = true);
 
 			virtual ~Graph();
 
-			virtual Vertex<precision>& getVertex(const VertexIndex& index);
-			virtual const Vertex<precision>& getVertex(const VertexIndex& index) const;
+			Vertex& getVertex(const UInt &index);
+			const Vertex& getVertex(const UInt &index) const;
 
-			void addEdge(Vertex<precision> &vertexA, Vertex<precision> &vertexB, const precision& cost);
-			void addBidirectionalEdge(Vertex<precision> &vertexA, Vertex<precision> &vertexB, const precision& cost);
+			void addEdge(Vertex &vertexA, Vertex &vertexB, const Real &cost);
+			void addBidirectionalEdge(Vertex &vertexA, Vertex &vertexB, const Real &cost);
 
-			unsigned int getNrOfVertices();
+			UInt getNrOfVertices() const;
 
 		protected:
-			virtual void promoteVertex(VertexPtr& vertex);
+			class VertexPromoteFunction
+			{
+				public:
+					virtual void operator() (VertexPtr &vertex) const = 0;
+			};
+
+			 void promoteVertices(const VertexPromoteFunction &promoteVertex);
+
+			 void copyEdgeTopology(const Graph& othergraph);
 
 		private:
-		    void initializeVertices(const unsigned int& nrOfVertices);
-			std::vector<VertexPtr> vertices;
+		    void initializeVertices(const UInt &nrOfVertices);
+
+
+		    typedef std::vector<VertexPtr>::size_type VectorSize;
+		    std::vector<VertexPtr> vertices;
 	};
 } //graphs
 } //extern C++
+
+
+#include "Vertex.hpp"
+#include "Edge.hpp"
+
 
 #endif /* GRAPH_HPP */
 
