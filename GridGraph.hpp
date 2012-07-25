@@ -2,7 +2,6 @@
 #define GRID_GRAPH_HPP
 
 #include "Graph.hpp"
-#include "GridVertex.hpp"
 #include "VertexRectangle.hpp"
 
 #include <boost/shared_ptr.hpp>
@@ -27,6 +26,11 @@ namespace graphs
 			virtual UInt getWidth() const;
 			virtual UInt getHeight() const;
 
+			virtual UInt getTop()    const;
+			virtual UInt getBottom() const;
+			virtual UInt getLeft()   const;
+			virtual UInt getRight()  const;
+
 			UInt positionToIndex(const UInt &x, const UInt &y) const;
 			UInt indexToX(const UInt &index) const;
 			UInt indexToY(const UInt &index) const;
@@ -34,7 +38,8 @@ namespace graphs
 		protected:
 			class GridVertexPromotion: public VertexPromoteFunction
 			{
-				virtual void operator() (VertexPtr &vertex) const;
+				public:
+					virtual void operator() (VertexPtr &vertex) const;
 			};
 
 		private:
@@ -44,6 +49,8 @@ namespace graphs
 	};
 } //graphs
 } //extern C++
+
+#include "GridVertex.hpp"
 
 #endif /* GRID_GRAPH_HPP */
 

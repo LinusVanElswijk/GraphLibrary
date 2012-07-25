@@ -51,7 +51,6 @@ namespace graphs
 
 	void Graph::initializeVertices(const UInt &nrOfVertices)
 	{
-
 		vertices.reserve((VectorSize)nrOfVertices);
 
 		for(UInt i = 0; i < nrOfVertices; i++)

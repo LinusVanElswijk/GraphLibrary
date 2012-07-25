@@ -1,14 +1,4 @@
-/*
- * HierarchicalGridMap.cpp
- *
- *  Created on: Jan 3, 2012
- *      Author: Linus
- */
-
-/*#include "HierarchicalGridGraph.hpp"
-
-#include <cmath>
-#include <iostream>
+#include "HierarchicalGridGraph.hpp"
 
 namespace graphs
 {
@@ -20,27 +10,129 @@ namespace graphs
 	 clusters(),
 	 entrances()
 	{
+		HierarchicalGridVertexPromotion promoteFunction;
+		promoteVertices( promoteFunction );
+
 		buildClusters();
-
-		std::cout << "now starting on entrances" << std::endl;
-
 		buildEntrances();
 	}
-	/*
-	template <typename precision>
-	HierarchicalGridMap<precision>::~HierarchicalGridMap()
-	{
-		// TODO Auto-generated destructor stub
-	}
-	/
+
 	UInt HierarchicalGridGraph::getNrOfClusters() const
 	{
 		return clusters.size();
 	}
 
-	UInt HierarchicalGridGraph::getNrOfEntrances() const
+	HierarchicalGridGraph::Cluster& HierarchicalGridGraph::getCluster(const UInt& index)
 	{
-		return entrances.size();
+		return *clusters.at(index);
+	}
+
+	const HierarchicalGridGraph::Cluster& HierarchicalGridGraph::getCluster(const UInt& index) const
+	{
+		return *clusters.at(index);
+	}
+
+	HierarchicalGridGraph::Cluster& HierarchicalGridGraph::getCluster(const UInt& x, const UInt& y)
+	{
+		return *clusters.at(clusterPositionToIndex(x, y));
+	}
+
+	const HierarchicalGridGraph::Cluster& HierarchicalGridGraph::getCluster(const UInt& x, const UInt& y) const
+	{
+		return *clusters.at(clusterPositionToIndex(x, y));
+	}
+
+	UInt  HierarchicalGridGraph::clusterPositionToIndex(const UInt &x, const UInt &y) const
+	{
+		return x + y * abstractionWidth;
+	}
+
+	UInt  HierarchicalGridGraph::clusterIndexToX(const UInt &index) const
+	{
+		return index % abstractionWidth;
+	}
+
+	UInt  HierarchicalGridGraph::clusterIndexToY(const UInt &index) const
+	{
+		return index / abstractionWidth;
+	}
+
+	void HierarchicalGridGraph::buildClusters()
+	{
+		const UInt DELTA = clusterSize - 1,
+		           MAX_X = this->getWidth()  - 1,
+		           MAX_Y = this->getHeight() - 1;
+
+		for(UInt x = 0, index = 0; x < this->getWidth(); x+=clusterSize)
+		{
+			for(UInt y = 0; y < this->getHeight(); y+=clusterSize, index++)
+			{
+				const UInt x2 = std::min(x + DELTA, MAX_X),
+						   y2 = std::min(y + DELTA, MAX_Y);
+
+				ClusterPtr ptr(new Cluster(*this, x, y, x2, y2, index));
+				clusters.push_back(ptr);
+			}
+		}
+
+		updateClusterIndices();
+	}
+
+	void HierarchicalGridGraph::updateClusterIndices()
+	{
+		const UInt NR_OF_CLUSTERS = getNrOfClusters();
+
+		for(UInt i = 0; i < NR_OF_CLUSTERS; i++)
+		{
+			updateClusterIndices(getCluster(i), i);
+		}
+	}
+
+	void HierarchicalGridGraph::updateClusterIndices(Cluster &cluster, const UInt &index)
+	{
+		const UInt WIDTH  = cluster.getWidth(),
+		           HEIGHT = cluster.getHeight();
+
+		for(UInt x = 0; x < WIDTH; x++)
+		{
+			for(UInt y = 0; y < HEIGHT; y++)
+			{
+				HierarchicalGridVertex &hVertex = static_cast<HierarchicalGridVertex&>(cluster.getVertex(x, y));
+				hVertex.setClusterIndex(index);
+			}
+		}
+	}
+
+	void HierarchicalGridGraph::HierarchicalGridVertexPromotion::operator() (VertexPtr &vertex) const
+	{
+		GridVertexPromotion::operator() (vertex);
+
+		HierarchicalGridVertexPtr hierarchicalGridVertex
+			(new HierarchicalGridVertex(static_cast<GridVertex&>(*vertex), 0) );
+
+		vertex = hierarchicalGridVertex;
+	}
+
+	HierarchicalGridVertex& HierarchicalGridGraph::getVertex(const UInt &index)
+	{
+		GridVertex& vertex = GridGraph::getVertex(index);
+		return static_cast< HierarchicalGridVertex& >(vertex);
+	}
+
+	const HierarchicalGridVertex& HierarchicalGridGraph::getVertex(const UInt &index) const
+	{
+		const GridVertex& vertex = GridGraph::getVertex(index);
+		return static_cast<const HierarchicalGridVertex& >(vertex);
+	}
+
+	GridVertex& HierarchicalGridGraph::getVertex(const UInt &x, const UInt &y)
+	{
+		return GridGraph::getVertex(x, y);
+	}
+
+	const GridVertex& HierarchicalGridGraph::getVertex(const UInt &x, const UInt &y) const
+	{
+		return GridGraph::getVertex(x, y);
 	}
 
 	UInt HierarchicalGridGraph::getAbstractionWidth() const
@@ -53,75 +145,35 @@ namespace graphs
 		return abstractionHeight;
 	}
 
-	void HierarchicalGridGraph::buildClusters()
-	{
-		const unsigned int delta = clusterSize - 1;
-
-		std::cout << "Constructing" << std::endl;
-
-		for(unsigned int x = 0; x < this->getWidth(); x+=clusterSize)
-		{
-		    for(unsigned int y = 0; y < this->getHeight(); y+=clusterSize)
-			{
-				const unsigned int x2 = std::min(x + delta, this->getWidth()),
-								   y2 = std::min(y + delta, this->getHeight());
-
-				GridVertex& topLeft  = this->getVertex(x, y);
-				GridVertex& bottomRight = this->getVertex(x2, y2);
-
-				ClusterPtr ptr(new Cluster(topLeft, bottomRight));
-
-				ptr->getTopRow();
-
-				clusters.push_back(ptr);
-			}
-		}
-
-		std::cout << clusters.size() << " clusters build" << std::endl;
-	}
-
 	void HierarchicalGridGraph::buildEntrances()
 	{
-		for(UInt x = 0; x < getAbstractionWidth(); x++)
+		for(UInt i = 0; i < clusters.size(); i++)
 		{
-			for(UInt y = 1; y < getAbstractionHeight(); y++)
-			{
-				buildTopEntrances(x, y);
-			}
+			clusters.at(i)->buildTopAndLeftEntrances();
 		}
-
-		for(UInt x = 1; x < getAbstractionWidth(); x++)
-		{
-			for(UInt y = 0; y < getAbstractionHeight(); y++)
-			{
-				//buildLeftEntrances(x, y);
-			}
-		}
-
-		std::cout << entrances.size() << " entrances build" << std::endl;
 	}
 
-	void HierarchicalGridGraph::buildTopEntrances(const UInt& clusterX, const UInt& clusterY)
+	/*
+	template <typename precision>
+	HierarchicalGridMap<precision>::~HierarchicalGridMap()
 	{
-		ClusterPtr current = clusters.at(positionToClusterIndex(clusterX, clusterY)),
-				   above   = clusters.at(positionToClusterIndex(clusterX, clusterY-1));
-
-		const UInt START_X  = current->left,
-				   END_X    = current->right;
-
-		std::vector<GridVertex&> topRow = above->getBottomRow(),
-				                 bottomRow = current->getTopRow();
-
-		for(UInt x = 0; x < topRow.size(); x++)
-		{
-			EntrancePtr entrance = getMaximalLengthEntrance(topRow, bottomRow, x, END_X);
-
-			if(entrance)
-			{
-				entrances.push_back(entrance);
-			}
-		}
+		// TODO Auto-generated destructor stub
 	}
+	/
+
+
+	UInt HierarchicalGridGraph::getNrOfEntrances() const
+	{
+		return entrances.size();
+	}
+
+
+
+
+
+
+
+
 
 	HierarchicalGridGraph::EntrancePtr HierarchicalGridGraph::getMaximalLengthEntrance(std::vector<GridVertex&> &rowA, std::vector<GridVertex&> &rowB, UInt &i, const UInt &maxI)
 	{
@@ -179,16 +231,80 @@ namespace graphs
 	{
 		return index / (abstractionWidth);
 	}
+	*/
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// class VertexRectangleInGraph
+
+	HierarchicalGridGraph::VertexRectangleInGraph::VertexRectangleInGraph( HierarchicalGridGraph& graph,
+																		   const UInt &minX, const UInt &minY, const UInt &maxX, const UInt &maxY
+																		 )
+	:minX(minX),
+	 minY(minY),
+	 maxX(maxX),
+	 maxY(maxY),
+	 graph(graph)
+	{
+	}
+
+	UInt HierarchicalGridGraph::VertexRectangleInGraph::getWidth() const
+	{
+		return maxX - minX + 1;
+	}
+
+	UInt HierarchicalGridGraph::VertexRectangleInGraph::getHeight() const
+	{
+		return maxY - minY + 1;
+	}
+
+	UInt HierarchicalGridGraph::VertexRectangleInGraph::getTop() const
+	{
+		return minY;
+	}
+
+	UInt HierarchicalGridGraph::VertexRectangleInGraph::getBottom() const
+	{
+		return maxY;
+	}
+
+	UInt HierarchicalGridGraph::VertexRectangleInGraph::getLeft() const
+	{
+		return minX;
+	}
+
+	UInt HierarchicalGridGraph::VertexRectangleInGraph::getRight() const
+	{
+		return maxX;
+	}
+
+	GridVertex& HierarchicalGridGraph::VertexRectangleInGraph::getVertex(const UInt &x, const UInt &y)
+	{
+		return graph.getVertex(minX + x, minY + y);
+	}
+
+	const GridVertex& HierarchicalGridGraph::VertexRectangleInGraph::getVertex(const UInt &x, const UInt &y) const
+	{
+		return graph.getVertex(minX + x, minY + y);
+	}
+
+	HierarchicalGridGraph& HierarchicalGridGraph::VertexRectangleInGraph::getGraph()
+	{
+		return graph;
+	}
+
+	const HierarchicalGridGraph& HierarchicalGridGraph::VertexRectangleInGraph::getGraph() const
+	{
+		return graph;
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// class Entrance
 
-	HierarchicalGridGraph::Entrance::Entrance(GridVertex &vertexA, GridVertex &vertexB)
-	:Rectangle(vertexA, vertexB)
+	HierarchicalGridGraph::Entrance::Entrance(HierarchicalGridGraph& graph, const UInt &minX, const UInt &minY, const UInt &maxX, const UInt &maxY)
+	:VertexRectangleInGraph(graph, minX, minY, maxX, maxY)
 	{
 
 	}
-	/
+	/*
 	template <typename precision>
 	bool HierarchicalGridMap<precision>::Entrance::isHorizontal() const
 	{
@@ -201,34 +317,90 @@ namespace graphs
 		//return this->topLeft.getX() == this->bottomRight.getX()-1;
 	}
 	/
-
+	*/
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// class Cluster
 
-	HierarchicalGridGraph::Cluster::Cluster(GridVertex& vertexA, GridVertex& vertexB)
-	:Rectangle(vertexA, vertexB),
-	 entrances()
+	HierarchicalGridGraph::Cluster::Cluster(HierarchicalGridGraph& graph, const UInt &minX, const UInt &minY, const UInt &maxX, const UInt &maxY, const UInt &index)
+	:VertexRectangleInGraph(graph, minX, minY, maxX, maxY),
+	 clusterIndex(index)
 	{
-
 	}
 
-	/
-	template <typename precision>
-	void HierarchicalGridMap<precision>::Cluster::getTopRow()
+	UInt HierarchicalGridGraph::Cluster::getClusterX() const
 	{
-		const unsigned int maxX = bottomRight.getX(),
-						   y	= topLeft.getY();
+		const HierarchicalGridGraph &hGraph = static_cast<const HierarchicalGridGraph&>(getGraph());
+		return hGraph.clusterIndexToX(clusterIndex);
+	}
 
-		std::list<Vertex&> row = std::list<Vertex&>();
+	UInt HierarchicalGridGraph::Cluster::getClusterY() const
+	{
+		const HierarchicalGridGraph &hGraph = static_cast<const HierarchicalGridGraph&>(getGraph());
+		return hGraph.clusterIndexToY(clusterIndex);
+	}
 
-		for(unsigned int x = topLeft.getX(); x <= maxX; x++)
+	void HierarchicalGridGraph::Cluster::buildTopAndLeftEntrances()
+	{
+		buildTopEntrances();
+		//buildLeftEntrances();
+	}
+
+	void HierarchicalGridGraph::Cluster::buildTopEntrances()
+	{
+		if(getClusterY() == 0)
 		{
-			row.push_back(map.getVertex(x, y));
+			return;
 		}
 
-		//return row;
+		for(UInt x = 0; x < getWidth(); x++)
+		{
+			EntrancePtr entrance = getMaximalLengthTopEntrance(x);
+
+			if(entrance)
+			{
+				entrances.push_back(entrance);
+			}
+		}
 	}
-	/
+
+	HierarchicalGridGraph::EntrancePtr HierarchicalGridGraph::Cluster::getMaximalLengthTopEntrance(UInt& x)
+	{
+		const Cluster& topCluster = getGraph().getCluster(getClusterX(), getClusterY()-1);
+		const UInt TOP_Y = topCluster.getHeight() - 1;
+
+		if( !Vertex::mutuallyConnected(getVertex(x, 0), topCluster.getVertex(x, TOP_Y)) )
+		{
+			return EntrancePtr();
+		}
+
+		const UInt  &START_X = x;
+
+		while(Vertex::mutuallyConnected(getVertex(x, 0),  topCluster.getVertex(x+1, TOP_Y)) &&
+			  Vertex::mutuallyConnected(getVertex(x+1, 0),  topCluster.getVertex(x, TOP_Y)) &&
+			  Vertex::mutuallyConnected(getVertex(x+1, 0),  topCluster.getVertex(x+1, TOP_Y))
+		     )
+		{
+			x++;
+		}
+
+		EntrancePtr newEntrance( new Entrance(getGraph(), START_X, topCluster.getBottom(), x, getTop()));
+		return newEntrance;
+	}
+
+	UInt HierarchicalGridGraph::Cluster::getNrOfEntrances() const
+	{
+		return entrances.size();
+	}
+
+	HierarchicalGridGraph::Entrance& HierarchicalGridGraph::Cluster::getEntrance(const UInt& index)
+	{
+		return *entrances.at(index);
+	}
+
+	const HierarchicalGridGraph::Entrance& HierarchicalGridGraph::Cluster::getEntrance(const UInt& index) const
+	{
+		return *entrances.at(index);
+	}
 }//graphs
-*/
+

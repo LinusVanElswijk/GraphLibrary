@@ -61,6 +61,26 @@ namespace graphs
 		return height;
 	}
 
+	UInt GridGraph::getTop() const
+	{
+		return 0;
+	}
+
+	UInt GridGraph::getBottom() const
+	{
+		return height - 1;
+	}
+
+	UInt GridGraph::getLeft() const
+	{
+		return 0;
+	}
+
+	UInt GridGraph::getRight() const
+	{
+		return width - 1;
+	}
+
 	void GridGraph::GridVertexPromotion::operator() (VertexPtr &vertex) const
 	{
 		GridGraph &graph = static_cast< GridGraph& >( vertex->getGraph() );

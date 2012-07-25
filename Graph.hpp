@@ -11,9 +11,6 @@ extern "C++"
 {
 namespace graphs
 {
-	class Vertex;
-	class Edge;
-
 	class Graph
 	{
 		public:
@@ -50,7 +47,6 @@ namespace graphs
 	};
 } //graphs
 } //extern C++
-
 
 #include "Vertex.hpp"
 #include "Edge.hpp"

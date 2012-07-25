@@ -19,7 +19,7 @@ namespace graphs
 	class Vertex
 	{
 		public:
-			UInt getIndex() const;
+			virtual UInt getIndex() const;
 
 			void addEdgeTo(const UInt &index, const Real &cost);
 			void addEdgeFrom(const UInt &index, const Real &cost);

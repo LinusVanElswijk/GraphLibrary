@@ -12,10 +12,14 @@ namespace graphs
 	class Edge;
 	class Vertex;
 	class GridVertex;
+	class HierarchicalGridVertex;
+
+	class VertexRectangle;
 
 	typedef boost::shared_ptr<Vertex> VertexPtr;
 	typedef boost::shared_ptr<Edge> EdgePtr;
 	typedef boost::shared_ptr<GridVertex> GridVertexPtr;
+	typedef boost::shared_ptr<HierarchicalGridVertex> HierarchicalGridVertexPtr;
 }
 
 #endif

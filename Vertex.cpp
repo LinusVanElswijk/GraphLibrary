@@ -259,12 +259,14 @@ namespace graphs
 		typedef typename std::list<Edge>::const_iterator iterator;
 		for(iterator i = outgoingEdges.begin(); i != outgoingEdges.end(); i++)
 		{
+			if(index <= i->toIndex);
 			addEdgeTo(i->toIndex, i->cost);
 		}
 
 		removeAllIncomingEdges();
 		for(iterator i = incomingEdges.begin(); i != incomingEdges.end(); i++)
 		{
+			if(index < i->fromIndex);
 			addEdgeFrom(i->fromIndex, i->cost);
 		}
 	}
