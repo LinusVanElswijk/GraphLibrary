@@ -14,7 +14,9 @@ namespace graphs
 	class GridGraph: public Graph, VertexRectangle
 	{
 		public:
-			GridGraph( const UInt &width, const UInt &height );
+			enum InitialConnections {UNCONNECTED, FOUR_WAY, EIGHT_WAY};
+
+			GridGraph( const UInt &width, const UInt &height, const InitialConnections &connections);
 			GridGraph( const GridGraph &otherGraph, bool copyEdges = true );
 
 			GridVertex& getVertex(const UInt &index);
@@ -35,6 +37,7 @@ namespace graphs
 			UInt indexToX(const UInt &index) const;
 			UInt indexToY(const UInt &index) const;
 
+
 		protected:
 			class GridVertexPromotion: public VertexPromoteFunction
 			{
@@ -43,7 +46,7 @@ namespace graphs
 			};
 
 		private:
-			void initializeEdges();
+			void initializeEdges(const InitialConnections & connections);
 
 			UInt width, height;
 	};

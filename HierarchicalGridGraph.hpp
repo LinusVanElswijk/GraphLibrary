@@ -72,6 +72,7 @@ namespace graphs
 					void buildLeftEntrances();
 
 					EntrancePtr getMaximalLengthTopEntrance(UInt& x);
+					EntrancePtr getMaximalLengthLeftEntrance(UInt& x);
 
 					const UInt clusterIndex;
 					std::vector<EntrancePtr> entrances;

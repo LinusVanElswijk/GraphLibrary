@@ -4,15 +4,15 @@
 
 namespace graphs
 {
-	GridGraph::GridGraph( const UInt &width, const UInt &height )
-    :Graph(width*height),
+	GridGraph::GridGraph( const UInt &width, const UInt &height, const InitialConnections &connections )
+	:Graph(width*height),
 	 width(width),
      height(height)
 	{
 		GridVertexPromotion promoteFunction;
 		promoteVertices( promoteFunction );
 
-		initializeEdges();
+		//initializeEdges(connections);
 	}
 
 	GridGraph::GridGraph( const GridGraph &otherGraph, bool copyEdges )
@@ -93,8 +93,13 @@ namespace graphs
 		vertex = gridVertex;
 	}
 
-	void GridGraph::initializeEdges()
+	void GridGraph::initializeEdges(const InitialConnections & connections)
 	{
+		if(connections == UNCONNECTED)
+		{
+			return;
+		}
+
 		const Real SQRT_2 = (Real)std::sqrt(2.0);
 
 		for(UInt x = 1; x < width; x++)
@@ -108,14 +113,17 @@ namespace graphs
 			}
 		}
 
-		for(UInt x = 1; x < width; x++)
+		if(connections == EIGHT_WAY)
 		{
-			this->addBidirectionalEdge(this->getVertex(x,0), this->getVertex(x-1, 0), (Real)1.0);
-		}
+			for(UInt x = 1; x < width; x++)
+			{
+				this->addBidirectionalEdge(this->getVertex(x,0), this->getVertex(x-1, 0), (Real)1.0);
+			}
 
-		for(UInt y = 1; y < height; y++)
-		{
-			this->addBidirectionalEdge(this->getVertex(0,y), this->getVertex(0, y-1), (Real)1.0);
+			for(UInt y = 1; y < height; y++)
+			{
+				this->addBidirectionalEdge(this->getVertex(0,y), this->getVertex(0, y-1), (Real)1.0);
+			}
 		}
 	}
 

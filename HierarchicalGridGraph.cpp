@@ -63,9 +63,9 @@ namespace graphs
 		           MAX_X = this->getWidth()  - 1,
 		           MAX_Y = this->getHeight() - 1;
 
-		for(UInt x = 0, index = 0; x < this->getWidth(); x+=clusterSize)
+		for(UInt y = 0, index = 0; y < this->getHeight(); y+=clusterSize)
 		{
-			for(UInt y = 0; y < this->getHeight(); y+=clusterSize, index++)
+			for(UInt x = 0; x < this->getWidth(); x+=clusterSize, index++)
 			{
 				const UInt x2 = std::min(x + DELTA, MAX_X),
 						   y2 = std::min(y + DELTA, MAX_Y);
@@ -149,7 +149,8 @@ namespace graphs
 	{
 		for(UInt i = 0; i < clusters.size(); i++)
 		{
-			clusters.at(i)->buildTopAndLeftEntrances();
+			Cluster& cluster = *clusters.at(i);
+			cluster.buildTopAndLeftEntrances();
 		}
 	}
 
@@ -324,7 +325,8 @@ namespace graphs
 
 	HierarchicalGridGraph::Cluster::Cluster(HierarchicalGridGraph& graph, const UInt &minX, const UInt &minY, const UInt &maxX, const UInt &maxY, const UInt &index)
 	:VertexRectangleInGraph(graph, minX, minY, maxX, maxY),
-	 clusterIndex(index)
+	 clusterIndex(index),
+	 entrances()
 	{
 	}
 
@@ -343,7 +345,7 @@ namespace graphs
 	void HierarchicalGridGraph::Cluster::buildTopAndLeftEntrances()
 	{
 		buildTopEntrances();
-		//buildLeftEntrances();
+		buildLeftEntrances();
 	}
 
 	void HierarchicalGridGraph::Cluster::buildTopEntrances()
@@ -360,6 +362,26 @@ namespace graphs
 			if(entrance)
 			{
 				entrances.push_back(entrance);
+				getGraph().getCluster(getClusterX(), getClusterY() - 1).entrances.push_back(entrance);
+			}
+		}
+	}
+
+	void HierarchicalGridGraph::Cluster::buildLeftEntrances()
+	{
+		if(getClusterX() == 0)
+		{
+			return;
+		}
+
+		for(UInt y = 0; y < getWidth(); y++)
+		{
+			EntrancePtr entrance = getMaximalLengthLeftEntrance(y);
+
+			if(entrance)
+			{
+				entrances.push_back(entrance);
+				getGraph().getCluster(getClusterX() - 1, getClusterY()).entrances.push_back(entrance);
 			}
 		}
 	}
@@ -374,17 +396,45 @@ namespace graphs
 			return EntrancePtr();
 		}
 
-		const UInt  &START_X = x;
+		const UInt START_X = x;
+		const UInt MAX_X = this->getWidth() - 1;
 
-		while(Vertex::mutuallyConnected(getVertex(x, 0),  topCluster.getVertex(x+1, TOP_Y)) &&
-			  Vertex::mutuallyConnected(getVertex(x+1, 0),  topCluster.getVertex(x, TOP_Y)) &&
-			  Vertex::mutuallyConnected(getVertex(x+1, 0),  topCluster.getVertex(x+1, TOP_Y))
+		while( x < MAX_X &&
+			   Vertex::mutuallyConnected(getVertex(x, 0),  topCluster.getVertex(x+1, TOP_Y)) &&
+			   Vertex::mutuallyConnected(getVertex(x+1, 0),  topCluster.getVertex(x, TOP_Y)) &&
+			   Vertex::mutuallyConnected(getVertex(x+1, 0),  topCluster.getVertex(x+1, TOP_Y))
 		     )
 		{
 			x++;
 		}
 
-		EntrancePtr newEntrance( new Entrance(getGraph(), START_X, topCluster.getBottom(), x, getTop()));
+		EntrancePtr newEntrance( new Entrance(getGraph(), START_X + getLeft(), topCluster.getBottom(), x + getLeft(), getTop()));
+		return newEntrance;
+	}
+
+	HierarchicalGridGraph::EntrancePtr HierarchicalGridGraph::Cluster::getMaximalLengthLeftEntrance(UInt& y)
+	{
+		const Cluster& leftCluster = getGraph().getCluster(getClusterX() - 1, getClusterY());
+		const UInt LEFT_X = leftCluster.getWidth() - 1;
+
+		if( !Vertex::mutuallyConnected(getVertex(0, y), leftCluster.getVertex(LEFT_X, y)) )
+		{
+			return EntrancePtr();
+		}
+
+		const UInt START_Y = y;
+		const UInt MAX_Y = this->getHeight() - 1;
+
+		while( y < MAX_Y &&
+			   Vertex::mutuallyConnected(getVertex(0, y),  leftCluster.getVertex(LEFT_X, y+1)) &&
+			   Vertex::mutuallyConnected(getVertex(0, y+1),  leftCluster.getVertex(LEFT_X, y)) &&
+			   Vertex::mutuallyConnected(getVertex(0, y+1),  leftCluster.getVertex(LEFT_X, y+1))
+			 )
+		{
+			y++;
+		}
+
+		EntrancePtr newEntrance( new Entrance(getGraph(), leftCluster.getRight(), START_Y + getTop(), getLeft(), y + getTop()));
 		return newEntrance;
 	}
 

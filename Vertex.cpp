@@ -116,7 +116,7 @@ namespace graphs
 
 	bool Vertex::mutuallyConnected(const Vertex &vertexA, const Vertex &vertexB)
 	{
-		EdgePtr edgeTo = vertexA.getEdgeTo(vertexB),
+		EdgePtr edgeTo   = vertexA.getEdgeTo(vertexB),
 				edgeFrom = vertexA.getEdgeFrom(vertexB);
 
 		const EdgePtr NO_EDGE = EdgePtr();
