@@ -38,8 +38,8 @@ namespace graphs
 
 			bool operator== (const Vertex &otherVertex) const;
 
-			std::list<Edge> getOutgoingEdges() const;
-			std::list<Edge> getIncomingEdges() const;
+            std::list<ConstEdgePtr> getOutgoingEdges() const;
+            std::list<ConstEdgePtr> getIncomingEdges() const;
 
 			Graph& getGraph();
 			const Graph& getGraph() const;

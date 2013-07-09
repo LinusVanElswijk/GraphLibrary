@@ -1,7 +1,7 @@
 #ifndef GRAPH_TYPES_HPP
 #define GRAPH_TYPES_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 namespace graphs
@@ -11,15 +11,14 @@ namespace graphs
 
 	class Edge;
 	class Vertex;
-	class GridVertex;
-	class HierarchicalGridVertex;
+    class GridVertex;
 
 	class VertexRectangle;
 
-	typedef boost::shared_ptr<Vertex> VertexPtr;
-	typedef boost::shared_ptr<Edge> EdgePtr;
-	typedef boost::shared_ptr<GridVertex> GridVertexPtr;
-	typedef boost::shared_ptr<HierarchicalGridVertex> HierarchicalGridVertexPtr;
+    typedef std::shared_ptr<Vertex> VertexPtr;
+    typedef std::shared_ptr<Edge> EdgePtr;
+    typedef std::shared_ptr<const Edge> ConstEdgePtr;
+    typedef std::shared_ptr<GridVertex> GridVertexPtr;
 }
 
 #endif

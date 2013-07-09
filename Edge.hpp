@@ -3,8 +3,6 @@
 
 #include "Graph.hpp"
 
-#include <boost/shared_ptr.hpp>
-
 extern "C++"
 {
 namespace graphs
@@ -19,7 +17,7 @@ namespace graphs
 
 			//Edge<precision>& operator= (const Edge<precision>& edge);
 
-			bool operator== (const Edge& edge) const;
+            bool operator== (const Edge& edge) const;
 
 			UInt fromIndex, toIndex;
 			Real cost;

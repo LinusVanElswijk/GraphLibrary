@@ -79,4 +79,26 @@ namespace graphs
 			promoteVertex(*i);
 		}
 	}
+
+    Vertex& Graph::addVertex() {
+        VertexPtr vertex(new Vertex(*this, vertices.size()));
+        vertices.push_back(vertex);
+        return *vertex;
+    }
+
+
+    void Graph::removeVertex(Vertex& vertex) {
+        int i = 0;
+        int size = vertices.size();
+
+        for(auto iterator = vertices.begin(); iterator != vertices.end(); iterator++, i++) {
+            if(&(**iterator) == &vertex) {
+                vertex.removeAllIncomingEdges();
+                vertex.removeAllOutgoingEdges();
+                vertices.erase(iterator);
+                break;
+            }
+        }
+    }
+
 }//graphs

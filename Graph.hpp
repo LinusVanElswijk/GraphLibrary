@@ -34,16 +34,21 @@ namespace graphs
 					virtual void operator() (VertexPtr &vertex) const = 0;
 			};
 
-			 void promoteVertices(const VertexPromoteFunction &promoteVertex);
+            void promoteVertices(const VertexPromoteFunction &promoteVertex);
 
-			 void copyEdgeTopology(const Graph& othergraph);
+            void copyEdgeTopology(const Graph& othergraph);
+
+            Vertex& addVertex();
+            void removeVertex(Vertex& vertex);
+
 
 		private:
-		    void initializeVertices(const UInt &nrOfVertices);
+            void initializeVertices(const UInt &nrOfVertices);
 
 
 		    typedef std::vector<VertexPtr>::size_type VectorSize;
 		    std::vector<VertexPtr> vertices;
+		    std::vector<EdgePtr> edges;
 	};
 } //graphs
 } //extern C++

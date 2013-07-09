@@ -100,18 +100,28 @@ namespace graphs
 	}
 
 	void Vertex::removeAllOutgoingEdges()
-	{
+    {
+        while(outgoingEdges.size() > 0) {
+            auto edge = outgoingEdges.front();
+            this->removeEdgeTo(edge->toIndex);
+        }
 		outgoingEdges.clear();
 	}
 
 	void Vertex::removeAllIncomingEdges()
-	{
-		incomingEdges.clear();
+    {
+        while(incomingEdges.size() > 0) {
+            auto edge = incomingEdges.front();
+            this->removeEdgeFrom(edge->fromIndex);
+        }
+        incomingEdges.clear();
 	}
 
 	bool Vertex::operator== (const Vertex &otherVertex) const
 	{
-		return this == &otherVertex;
+        return &this->graph == &otherVertex.graph &&
+               this->index == otherVertex.index;
+        //return this == &otherVertex;
 	}
 
 	bool Vertex::mutuallyConnected(const Vertex &vertexA, const Vertex &vertexB)
@@ -119,7 +129,7 @@ namespace graphs
 		EdgePtr edgeTo   = vertexA.getEdgeTo(vertexB),
 				edgeFrom = vertexA.getEdgeFrom(vertexB);
 
-		const EdgePtr NO_EDGE = EdgePtr();
+        const EdgePtr NO_EDGE = EdgePtr();
 
 		return edgeTo != NO_EDGE && edgeFrom != NO_EDGE;
 	}
@@ -134,32 +144,26 @@ namespace graphs
 		return graph;
 	}
 
-	std::list<Edge> Vertex::getOutgoingEdges() const
-	{
-		typedef typename std::list<EdgePtr>::const_iterator iterator;
+    std::list<ConstEdgePtr> Vertex::getOutgoingEdges() const
+    {
+        std::list<ConstEdgePtr> list;
 
-		std::list<Edge> edges;
+        for(auto edge: outgoingEdges) {
+            list.push_back(edge);
+        }
 
-		for(iterator i = outgoingEdges.begin(); i != outgoingEdges.end(); i++)
-		{
-			edges.push_back(**i);
-		}
-
-		return edges;
+        return list;
 	}
 
-	std::list<Edge> Vertex::getIncomingEdges() const
+    std::list<ConstEdgePtr> Vertex::getIncomingEdges() const
 	{
-		typedef typename std::list<EdgePtr>::const_iterator iterator;
+        std::list<ConstEdgePtr> list;
 
-		std::list<Edge > edges;
+        for(auto edge: incomingEdges) {
+            list.push_back(edge);
+        }
 
-		for(iterator i = incomingEdges.begin(); i != incomingEdges.end(); i++)
-		{
-			edges.push_back(**i);
-		}
-
-		return edges;
+        return list;
 	}
 
 	EdgePtr Vertex::getEdgeTo(const UInt &index)
@@ -252,22 +256,22 @@ namespace graphs
 
 	void Vertex::copyEdges(const Vertex& source)
 	{
-		std::list<Edge> outgoingEdges = source.getOutgoingEdges();
-		std::list<Edge> incomingEdges = source.getIncomingEdges();
+        std::list<graphs::ConstEdgePtr> outgoingEdges = source.getOutgoingEdges();
+        std::list<graphs::ConstEdgePtr> incomingEdges = source.getIncomingEdges();
 
 		removeAllOutgoingEdges();
 		typedef typename std::list<Edge>::const_iterator iterator;
-		for(iterator i = outgoingEdges.begin(); i != outgoingEdges.end(); i++)
+        for(auto edge: outgoingEdges)
 		{
-			if(index <= i->toIndex);
-			addEdgeTo(i->toIndex, i->cost);
+            if(index <= edge->toIndex);
+            addEdgeTo(edge->toIndex, edge->cost);
 		}
 
 		removeAllIncomingEdges();
-		for(iterator i = incomingEdges.begin(); i != incomingEdges.end(); i++)
+        for(auto edge: incomingEdges)
 		{
-			if(index < i->fromIndex);
-			addEdgeFrom(i->fromIndex, i->cost);
+            if(index < edge->fromIndex);
+            addEdgeFrom(edge->fromIndex, edge->cost);
 		}
 	}
 

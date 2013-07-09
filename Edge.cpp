@@ -16,6 +16,7 @@ namespace graphs
 	 toIndex(toIndex),
 	 cost(cost)
 	{
+
 	}
 
 	/*
